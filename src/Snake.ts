@@ -11,6 +11,13 @@ export default class Snake {
   private onEat: () => void;
 
   constructor(startPos: Vector2, onCollide: () => void, onEat: () => void) {
+    for (let i = 0; i < 5; i++) {
+      this.tail.push({
+        x: UNIT_SIZE * -i,
+        y: 0,
+      });
+    }
+
     this.head = startPos;
     this.onCollide = onCollide;
     this.onEat = onEat;
