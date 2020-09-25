@@ -1,6 +1,7 @@
+import Snake from "./Snake";
 import Canvas from "./Canvas";
-import { COLOR_PALETTE, UNIT_SIZE } from "./consts";
-import { Direction, Vector2 } from "./types";
+import { COLOR_PALETTE, UNIT_SIZE } from "./library/consts";
+import { Direction, Vector2 } from "./library/types";
 
 export default class GameController {
   private width: number;
@@ -9,15 +10,15 @@ export default class GameController {
   private mainCanvas: Canvas;
   private bgCanvas: Canvas; // TODO
 
-  private head: Vector2;
-  private tail: Vector2[] = [];
-  private food: Vector2;
   private direction: Direction = Direction.Left;
   private timer: NodeJS.Timeout;
 
-  constructor() {
-    this.width = 256;
-    this.height = this.width * 0.5;
+  private food: Vector2;
+  private snake: Snake;
+
+  constructor(width: number) {
+    this.width = width;
+    this.height = width * 0.5;
 
     this.mainCanvas = new Canvas("main-canvas", this.width, this.height);
     this.bgCanvas = new Canvas("bg-canvas", this.width, this.height);
@@ -26,26 +27,21 @@ export default class GameController {
     container.style.width = `${this.width * 4}px`;
     container.style.height = `${this.height * 4}px`;
 
-    const debugStart: Vector2 = {
-      x: this.width / (UNIT_SIZE / 2),
-      y: this.height / (UNIT_SIZE / 2),
-    };
-    for (let i = 0; i < 1000; i++) {
-      this.tail.push({ ...debugStart, x: debugStart.x - UNIT_SIZE * i });
-    }
+    this.snake = new Snake({ x: 0, y: 0 }, this.handleCollide, this.handleEat);
 
-    this.head = debugStart;
-
-    this.setFood();
+    this.setFoodPosition();
     this.registerEvents();
     this.blit();
-    this.timer = setInterval(this.run, 50);
+    this.timer = setInterval(this.loop, 50);
 
+    // TODO:
     // on click start
     // on "p" pause
+    // separate snake
+    // layers
   }
 
-  registerEvents = () => {
+  private registerEvents = () => {
     document.addEventListener("keydown", (e) => {
       switch (e.key) {
         case "w":
@@ -81,38 +77,13 @@ export default class GameController {
     });
   };
 
-  private run = () => {
-    this.moveSnake();
-    this.collisions();
+  private loop = () => {
+    this.snake.move(this.direction, this.width, this.height, this.food);
     this.blit();
   };
 
-  private moveSnake = () => {
-    if (this.tail.length !== 0) {
-      for (let i = this.tail.length - 1; i >= 1; i--) {
-        this.tail[i] = this.tail[i - 1];
-      }
-      this.tail[0] = { ...this.head };
-    }
-    switch (this.direction) {
-      case Direction.Up:
-        this.head = { ...this.head, y: this.head.y - UNIT_SIZE };
-        break;
-      case Direction.Left:
-        this.head = { ...this.head, x: this.head.x + UNIT_SIZE };
-        break;
-      case Direction.Down:
-        this.head = { ...this.head, y: this.head.y + UNIT_SIZE };
-        break;
-      case Direction.Right:
-        this.head = { ...this.head, x: this.head.x - UNIT_SIZE };
-        break;
-      default:
-        break;
-    }
-  };
-
-  private setFood = () => {
+  private setFoodPosition = () => {
+    // todo: dont draw on snake tails or header
     this.food = {
       x:
         UNIT_SIZE *
@@ -133,21 +104,20 @@ export default class GameController {
     );
   };
 
-  private drawHead = () => {
+  private drawSnake = () => {
+    // draw tail
+    this.mainCanvas.ctx.fillStyle = COLOR_PALETTE.TAIL;
+    this.snake.getTail().forEach((pos) => {
+      this.mainCanvas.ctx.fillRect(pos.x, pos.y, UNIT_SIZE, UNIT_SIZE);
+    });
+    // draw head
     this.mainCanvas.ctx.fillStyle = COLOR_PALETTE.HEAD;
     this.mainCanvas.ctx.fillRect(
-      this.head.x,
-      this.head.y,
+      this.snake.head.x,
+      this.snake.head.y,
       UNIT_SIZE,
       UNIT_SIZE
     );
-  };
-
-  private drawTail = () => {
-    this.mainCanvas.ctx.fillStyle = COLOR_PALETTE.TAIL;
-    this.tail.forEach((pos) => {
-      this.mainCanvas.ctx.fillRect(pos.x, pos.y, UNIT_SIZE, UNIT_SIZE);
-    });
   };
 
   private drawBg = () => {
@@ -158,56 +128,14 @@ export default class GameController {
   private blit = () => {
     this.drawBg();
     this.drawFood();
-    this.drawTail();
-    this.drawHead();
+    this.drawSnake();
   };
 
-  private collisions = () => {
-    this.wrap();
-    this.tail.forEach(({ x, y }) => {
-      if (x === this.head.x && y === this.head.y) {
-        console.log("Self-collide");
-        return;
-      }
-    });
-    if (this.head.x === this.food.x && this.head.y === this.food.y) {
-      this.onEat();
-    }
+  private handleCollide = () => {
+    console.log("Self-collided");
   };
 
-  private onEat = () => {
-    this.tail.unshift({ x: this.head.x, y: this.head.y });
-    this.setFood();
-  };
-
-  private wrap = () => {
-    if (this.head.x < 0) {
-      this.head = {
-        ...this.head,
-        x: this.width - UNIT_SIZE,
-      };
-      return;
-    }
-    if (this.head.x > this.width - UNIT_SIZE) {
-      this.head = {
-        ...this.head,
-        x: 0,
-      };
-      return;
-    }
-    if (this.head.y < 0) {
-      this.head = {
-        ...this.head,
-        y: this.height - UNIT_SIZE,
-      };
-      return;
-    }
-    if (this.head.y > this.height - UNIT_SIZE) {
-      this.head = {
-        ...this.head,
-        y: 0,
-      };
-      return;
-    }
+  private handleEat = () => {
+    this.setFoodPosition();
   };
 }
