@@ -19,6 +19,8 @@ export default class GameController {
   private food: Vector2;
   private snake: Snake;
 
+  private score: number = 0;
+
   constructor(width: number) {
     this.width = width;
     this.height = width * 0.5;
@@ -158,5 +160,7 @@ export default class GameController {
 
   private handleEat = () => {
     this.setFoodPosition();
+    this.score++;
+    console.log(`Score: ${this.score}`);
   };
 }
