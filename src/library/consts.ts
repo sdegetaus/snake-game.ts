@@ -1,8 +1,9 @@
 export const COLOR_PALETTE = {
-  BG: "#000000",
-  HEAD: "#FFFFFF",
+  BG: "black",
+  HEAD: "white",
   TAIL: "#cccccc",
   FOOD: "#FF0000",
 };
 
-export const UNIT_SIZE = 4;
+export const UNIT_SIZE = 20;
+export const STROKE_SIZE = 2;

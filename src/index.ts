@@ -1,3 +1,3 @@
 import GameController from "./GameController";
 
-new GameController(256);
+new GameController(800);

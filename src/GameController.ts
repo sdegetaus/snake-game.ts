@@ -1,6 +1,6 @@
 import Snake from "./Snake";
 import Canvas from "./Canvas";
-import { COLOR_PALETTE, UNIT_SIZE } from "./library/consts";
+import { COLOR_PALETTE, UNIT_SIZE, STROKE_SIZE } from "./library/consts";
 import { Direction, Vector2 } from "./library/types";
 
 export default class GameController {
@@ -22,15 +22,15 @@ export default class GameController {
   private score: number = 0;
 
   constructor(width: number) {
-    this.width = width;
-    this.height = width * 0.5;
+    this.width = width - (width % UNIT_SIZE);
+    this.height = this.width;
 
     this.mainCanvas = new Canvas("main-canvas", this.width, this.height);
     this.bgCanvas = new Canvas("bg-canvas", this.width, this.height);
 
     const container = document.getElementById("container");
-    container.style.width = `${this.width * UNIT_SIZE}px`;
-    container.style.height = `${this.height * UNIT_SIZE}px`;
+    container.style.width = `${this.width}px`;
+    container.style.height = `${this.height}px`;
 
     this.snake = new Snake({ x: 0, y: 0 }, this.handleCollide, this.handleEat);
     this.start();
@@ -44,8 +44,9 @@ export default class GameController {
     this.setFoodPosition();
     this.registerEvents();
     this.blit();
-    this.timer = setInterval(this.loop, 50);
+    this.timer = setInterval(this.loop, 100);
     this.isRunning = true;
+    this.drawBg();
   };
 
   private pause = () => {
@@ -57,7 +58,7 @@ export default class GameController {
 
   private resume = () => {
     this.isRunning = true;
-    this.timer = setInterval(this.loop, 50);
+    this.timer = setInterval(this.loop, 100);
   };
 
   private registerEvents = () => {
@@ -131,38 +132,47 @@ export default class GameController {
   };
 
   private drawFood = () => {
+    this.mainCanvas.ctx.beginPath();
     this.mainCanvas.ctx.fillStyle = COLOR_PALETTE.FOOD;
-    this.mainCanvas.ctx.fillRect(
-      this.food.x,
-      this.food.y,
-      UNIT_SIZE,
-      UNIT_SIZE
-    );
+    this.mainCanvas.ctx.rect(this.food.x, this.food.y, UNIT_SIZE, UNIT_SIZE);
+    this.mainCanvas.ctx.fill();
+    this.mainCanvas.ctx.stroke();
+    this.mainCanvas.ctx.closePath();
   };
 
   private drawSnake = () => {
+    this.mainCanvas.ctx.beginPath();
     // draw tail
     this.mainCanvas.ctx.fillStyle = COLOR_PALETTE.TAIL;
     this.snake.getTail().forEach((pos) => {
-      this.mainCanvas.ctx.fillRect(pos.x, pos.y, UNIT_SIZE, UNIT_SIZE);
+      this.mainCanvas.ctx.rect(pos.x, pos.y, UNIT_SIZE, UNIT_SIZE);
     });
+    this.mainCanvas.ctx.fill();
+    this.mainCanvas.ctx.stroke();
+
     // draw head
+    this.mainCanvas.ctx.beginPath();
     this.mainCanvas.ctx.fillStyle = COLOR_PALETTE.HEAD;
-    this.mainCanvas.ctx.fillRect(
+    this.mainCanvas.ctx.rect(
       this.snake.head.x,
       this.snake.head.y,
       UNIT_SIZE,
       UNIT_SIZE
     );
+    this.mainCanvas.ctx.fill();
+    this.mainCanvas.ctx.stroke();
+    this.mainCanvas.ctx.closePath();
   };
 
   private drawBg = () => {
-    this.mainCanvas.ctx.fillStyle = COLOR_PALETTE.BG;
-    this.mainCanvas.ctx.fillRect(0, 0, this.width, this.height);
+    this.bgCanvas.ctx.fillStyle = COLOR_PALETTE.BG;
+    this.bgCanvas.ctx.fillRect(0, 0, this.width, this.height);
   };
 
   private blit = () => {
-    this.drawBg();
+    this.mainCanvas.ctx.strokeStyle = COLOR_PALETTE.BG;
+    this.mainCanvas.ctx.lineWidth = STROKE_SIZE;
+    this.mainCanvas.ctx.clearRect(0, 0, this.width, this.height);
     this.drawFood();
     this.drawSnake();
   };
