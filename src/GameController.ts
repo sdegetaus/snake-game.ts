@@ -34,9 +34,9 @@ export default class GameController {
 
     this.snake = new Snake({ x: 0, y: 0 }, this.handleCollide, this.handleEat);
     this.start();
+
     // TODO:
     // on click start
-    // on "p" pause
     // layers
   }
 
@@ -106,7 +106,6 @@ export default class GameController {
   };
 
   private setFoodPosition = () => {
-    // todo: dont draw on snake tails or header
     this.food = {
       x:
         UNIT_SIZE *
@@ -115,6 +114,20 @@ export default class GameController {
         UNIT_SIZE *
         Math.round((Math.random() * (this.height - UNIT_SIZE)) / UNIT_SIZE),
     };
+    if (
+      this.snake.head.x === this.food.x &&
+      this.snake.head.y === this.food.y
+    ) {
+      this.setFoodPosition();
+      return;
+    }
+    // todo: a faster way?
+    this.snake.getTail().forEach((pos) => {
+      if (pos.x === this.food.x && pos.y === this.food.y) {
+        this.setFoodPosition();
+        return;
+      }
+    });
   };
 
   private drawFood = () => {
