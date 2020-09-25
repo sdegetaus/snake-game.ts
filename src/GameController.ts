@@ -28,7 +28,10 @@ export default class GameController {
     this.mainCanvas = new Canvas("main-canvas", this.width, this.height);
     this.bgCanvas = new Canvas("bg-canvas", this.width, this.height);
 
-    const container = document.getElementById("container");
+    const container = document.getElementById("canvases");
+    if (container == null) {
+      throw new Error(`Couldn't find canvas container!`);
+    }
     container.style.width = `${this.width}px`;
     container.style.height = `${this.height}px`;
 
@@ -101,19 +104,8 @@ export default class GameController {
   };
 
   private loop = () => {
-    this.randomWalker();
     this.snake.move(this.direction, this.width, this.height, this.food);
     this.blit();
-  };
-
-  private randomWalker = () => {
-    const lastDir = this.direction;
-    this.direction = Math.round(1 + Math.random() * 3);
-    const g = (this.direction + 2) % 4;
-    console.log(g, lastDir);
-    if (g === lastDir || g === 0) {
-      this.randomWalker();
-    }
   };
 
   private setFoodPosition = () => {

@@ -3,7 +3,7 @@ import { Direction, Vector2 } from "./library/types";
 
 export default class Snake {
   // parts
-  public head: Vector2 = { x: 0, y: 0 };
+  public head: Vector2;
   private tail: Vector2[] = [];
 
   // callbacks
@@ -17,7 +17,6 @@ export default class Snake {
         y: 0,
       });
     }
-
     this.head = startPos;
     this.onCollide = onCollide;
     this.onEat = onEat;

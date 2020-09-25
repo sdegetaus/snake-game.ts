@@ -6,5 +6,5 @@ export const COLOR_PALETTE = {
 };
 
 export const UNIT_SIZE = 20;
-export const STROKE_SIZE = 2;
-export const DELAY = 400;
+export const STROKE_SIZE = 3;
+export const DELAY = 200;

@@ -1,10 +1,13 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 
 const path = require("path");
 
 module.exports = {
   mode: "development",
-  entry: { index: ["./src/index.ts", "./public/style.css"] },
+  entry: {
+    index: ["./src/index.ts"],
+  },
   devtool: "inline-source-map",
   devServer: {
     contentBase: path.join(__dirname, "dist"),
@@ -17,21 +20,6 @@ module.exports = {
         test: /\.ts$/,
         use: "ts-loader",
         exclude: /node_modules/,
-      },
-      {
-        test: /\.css$/i,
-        use: [
-          {
-            loader: "style-loader",
-          },
-          {
-            loader: "file-loader",
-            options: {
-              name: "[name].[ext]",
-              esModule: false,
-            },
-          },
-        ],
       },
     ],
   },
@@ -46,6 +34,12 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: "public/index.html",
+    }),
+    new CopyPlugin({
+      patterns: [
+        { from: "./public/fonts", to: "fonts" },
+        { from: "./public/style.css", to: "" },
+      ],
     }),
   ],
 };
