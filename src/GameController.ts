@@ -175,6 +175,22 @@ export default class GameController {
     this.mainCanvas.ctx.clearRect(0, 0, this.width, this.height);
     this.drawFood();
     this.drawSnake();
+    this.gizmo();
+  };
+
+  private gizmo = () => {
+    this.mainCanvas.ctx.beginPath();
+    this.mainCanvas.ctx.moveTo(
+      this.snake.head.x + Math.floor(UNIT_SIZE / 2),
+      this.snake.head.y + Math.floor(UNIT_SIZE / 2)
+    );
+    this.mainCanvas.ctx.lineTo(
+      this.food.x + Math.floor(UNIT_SIZE / 2),
+      this.food.y + Math.floor(UNIT_SIZE / 2)
+    );
+    this.mainCanvas.ctx.strokeStyle = "blue";
+    this.mainCanvas.ctx.stroke();
+    this.mainCanvas.ctx.closePath();
   };
 
   private handleCollide = () => {
