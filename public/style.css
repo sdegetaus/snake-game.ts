@@ -1,0 +1,26 @@
+body {
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: lightslategrey;
+}
+
+#container {
+  position: relative;
+}
+
+canvas {
+  position: absolute;
+  image-rendering: pixelated;
+}
+
+#bg-canvas {
+  z-index: 0;
+}
+
+#main-canvas {
+  z-index: 1;
+}
