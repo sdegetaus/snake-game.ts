@@ -4,14 +4,17 @@ import { COLOR_PALETTE, UNIT_SIZE } from "./library/consts";
 import { Direction, Vector2 } from "./library/types";
 
 export default class GameController {
+  // dimensions
   private width: number;
   private height: number;
 
+  // ui elements
   private mainCanvas: Canvas;
   private bgCanvas: Canvas; // TODO
 
   private direction: Direction = Direction.Left;
-  private timer: NodeJS.Timeout;
+  private timer: NodeJS.Timeout = null;
+  private isRunning: boolean = false;
 
   private food: Vector2;
   private snake: Snake;
@@ -24,22 +27,36 @@ export default class GameController {
     this.bgCanvas = new Canvas("bg-canvas", this.width, this.height);
 
     const container = document.getElementById("container");
-    container.style.width = `${this.width * 4}px`;
-    container.style.height = `${this.height * 4}px`;
+    container.style.width = `${this.width * UNIT_SIZE}px`;
+    container.style.height = `${this.height * UNIT_SIZE}px`;
 
     this.snake = new Snake({ x: 0, y: 0 }, this.handleCollide, this.handleEat);
+    this.start();
+    // TODO:
+    // on click start
+    // on "p" pause
+    // layers
+  }
 
+  private start = () => {
     this.setFoodPosition();
     this.registerEvents();
     this.blit();
     this.timer = setInterval(this.loop, 50);
+    this.isRunning = true;
+  };
 
-    // TODO:
-    // on click start
-    // on "p" pause
-    // separate snake
-    // layers
-  }
+  private pause = () => {
+    this.isRunning = false;
+    clearInterval(this.timer);
+    this.timer = null;
+    console.log("test", this.timer);
+  };
+
+  private resume = () => {
+    this.isRunning = true;
+    this.timer = setInterval(this.loop, 50);
+  };
 
   private registerEvents = () => {
     document.addEventListener("keydown", (e) => {
@@ -69,7 +86,11 @@ export default class GameController {
           }
           break;
         case "p":
-          console.log("pause");
+          if (this.isRunning) {
+            this.pause();
+          } else {
+            this.resume();
+          }
           break;
         default:
           return;
