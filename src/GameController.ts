@@ -1,6 +1,6 @@
 import Snake from "./Snake";
 import Canvas from "./Canvas";
-import { COLOR_PALETTE, UNIT_SIZE, STROKE_SIZE } from "./library/consts";
+import { COLOR_PALETTE, UNIT_SIZE, STROKE_SIZE, DELAY } from "./library/consts";
 import { Direction, Vector2 } from "./library/types";
 
 export default class GameController {
@@ -44,7 +44,7 @@ export default class GameController {
     this.setFoodPosition();
     this.registerEvents();
     this.blit();
-    this.timer = setInterval(this.loop, 100);
+    this.timer = setInterval(this.loop, DELAY);
     this.isRunning = true;
     this.drawBg();
   };
@@ -53,12 +53,11 @@ export default class GameController {
     this.isRunning = false;
     clearInterval(this.timer);
     this.timer = null;
-    console.log("test", this.timer);
   };
 
   private resume = () => {
     this.isRunning = true;
-    this.timer = setInterval(this.loop, 100);
+    this.timer = setInterval(this.loop, DELAY);
   };
 
   private registerEvents = () => {
@@ -102,8 +101,19 @@ export default class GameController {
   };
 
   private loop = () => {
+    this.randomWalker();
     this.snake.move(this.direction, this.width, this.height, this.food);
     this.blit();
+  };
+
+  private randomWalker = () => {
+    const lastDir = this.direction;
+    this.direction = Math.round(1 + Math.random() * 3);
+    const g = (this.direction + 2) % 4;
+    console.log(g, lastDir);
+    if (g === lastDir || g === 0) {
+      this.randomWalker();
+    }
   };
 
   private setFoodPosition = () => {

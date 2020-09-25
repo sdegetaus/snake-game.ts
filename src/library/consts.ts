@@ -7,3 +7,4 @@ export const COLOR_PALETTE = {
 
 export const UNIT_SIZE = 20;
 export const STROKE_SIZE = 2;
+export const DELAY = 400;
