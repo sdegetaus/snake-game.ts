@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= htmlWebpackPlugin.options.title %></title>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1><%= htmlWebpackPlugin.options.title %></h1>
+      </header>
+      <div id="game">
+        <div class="layers">
+          <canvas class="main"></canvas>
+          <canvas class="bg"></canvas>
+        </div>
+        <div class="ui">
+          <div class="content">
+            <h4>Score</h4>
+            <span class="ui score">0</span>
+          </div>
+        </div>
+      </div>
+      <footer>
+        <small
+          >&copy; <span class="ui year"></span>. Created by
+          <a href="https://taus.mx" target="_blank" rel="nofollow noopener"
+            >Santiago Degetau</a
+          >.</small
+        >
+      </footer>
+    </div>
+  </body>
+</html>

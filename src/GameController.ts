@@ -1,5 +1,6 @@
 import Snake from "./Snake";
 import Canvas from "./Canvas";
+import UI from "./UI";
 import { COLOR_PALETTE, UNIT_SIZE, STROKE_SIZE, DELAY } from "./library/consts";
 import { Direction, Vector2 } from "./library/types";
 
@@ -9,13 +10,16 @@ export default class GameController {
   private height: number;
 
   // ui elements
+  private ui: UI;
   private mainCanvas: Canvas;
   private bgCanvas: Canvas; // TODO
 
+  // timing & mechanics
   private direction: Direction = Direction.Left;
   private timer: NodeJS.Timeout = null;
   private isRunning: boolean = false;
 
+  // objects
   private food: Vector2;
   private snake: Snake;
 
@@ -25,15 +29,15 @@ export default class GameController {
     this.width = width - (width % UNIT_SIZE);
     this.height = this.width;
 
-    this.mainCanvas = new Canvas("main-canvas", this.width, this.height);
-    this.bgCanvas = new Canvas("bg-canvas", this.width, this.height);
+    this.mainCanvas = new Canvas("#game .main", this.width, this.height);
+    this.bgCanvas = new Canvas("#game .bg", this.width, this.height);
 
-    const container = document.getElementById("canvases");
-    if (container == null) {
+    const layers = document.querySelector("#game .layers") as HTMLDivElement;
+    if (layers == null) {
       throw new Error(`Couldn't find canvas container!`);
     }
-    container.style.width = `${this.width}px`;
-    container.style.height = `${this.height}px`;
+    layers.style.width = `${this.width}px`;
+    layers.style.height = `${this.height}px`;
 
     this.snake = new Snake({ x: 0, y: 0 }, this.handleCollide, this.handleEat);
     this.start();
@@ -41,6 +45,7 @@ export default class GameController {
     // TODO:
     // on click start
     // layers
+    this.ui = new UI();
   }
 
   private start = () => {
@@ -201,7 +206,6 @@ export default class GameController {
 
   private handleEat = () => {
     this.setFoodPosition();
-    this.score++;
-    console.log(`Score: ${this.score}`);
+    this.ui.updateScore(++this.score);
   };
 }

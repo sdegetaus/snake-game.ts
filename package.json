@@ -2,28 +2,29 @@
   "name": "snake-game.ts",
   "description": "",
   "version": "0.1.0",
+  "author": {
+    "name": "Santiago Degetau",
+    "url": "https://www.taus.mx"
+  },
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server --open",
     "build": "webpack"
   },
   "private": true,
-  "author": {
-    "name": "Santiago Degetau",
-    "url": "https://www.taus.mx"
-  },
   "devDependencies": {
     "@types/html-webpack-plugin": "^3.2.3",
-    "copy-webpack-plugin": "^6.1.1",
+    "css-loader": "^4.3.0",
     "file-loader": "^6.1.0",
     "html-webpack-plugin": "^4.5.0",
     "mini-css-extract-plugin": "^0.11.2",
+    "sass": "^1.26.11",
+    "sass-loader": "^10.0.2",
     "style-loader": "^1.2.1",
     "ts-loader": "^8.0.4",
     "typescript": "^4.0.3",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0"
-  },
-  "license": "ISC"
+  }
 }
