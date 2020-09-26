@@ -1,7 +1,7 @@
 @font-face {
   font-family: "Minecraft";
-  src: url("../fonts/Minecraft-Regular.woff2") format("woff2"),
-    url("../fonts/Minecraft-Regular.woff") format("woff");
+  src: url("../fonts/RetroGaming.woff2") format("woff2"),
+    url("../fonts/RetroGaming.woff") format("woff");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -65,7 +65,8 @@ header {
   .bg {
     z-index: 0;
   }
-  .ui {
+
+  .panel {
     width: 250px;
     box-shadow: inset 5px 0 0 0 whitesmoke;
     .content {
@@ -82,8 +83,19 @@ header {
 }
 
 footer {
-  color: white;
   margin: 40px 0;
   align-items: center;
-  font-size: 18px;
+  &,
+  a {
+    color: white;
+    font-size: 18px;
+  }
+
+  a {
+    text-decoration: none;
+    text-shadow: 0 0 2px white;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }

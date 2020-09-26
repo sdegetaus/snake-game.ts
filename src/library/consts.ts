@@ -1,8 +1,8 @@
 export const COLOR_PALETTE = {
   BG: "black",
-  HEAD: "white",
+  HEAD: "whitesmoke",
   TAIL: "#cccccc",
-  FOOD: "#FF0000",
+  FOOD: "#fd1348",
 };
 
 export const UNIT_SIZE = 20;
