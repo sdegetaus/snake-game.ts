@@ -2,11 +2,11 @@
 // on click start
 // layers
 
-import Snake from "./Snake";
 import Canvas from "./Canvas";
-import UI from "./UI";
-import { COLOR_PALETTE, UNIT_SIZE, STROKE_SIZE, DELAY } from "./library/consts";
+import { COLOR_PALETTE, DELAY, STROKE_SIZE, UNIT_SIZE } from "./library/consts";
 import { Direction, Options, Vector2 } from "./library/types";
+import Snake from "./Snake";
+import UI from "./UI";
 
 export default class GameController {
   // dimensions

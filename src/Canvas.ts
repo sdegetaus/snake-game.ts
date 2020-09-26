@@ -1,5 +1,3 @@
-import { UNIT_SIZE } from "./library/consts";
-
 export default class Canvas {
   private canvas: HTMLCanvasElement;
   public ctx: CanvasRenderingContext2D;
