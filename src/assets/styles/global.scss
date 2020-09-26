@@ -1,5 +1,5 @@
 @font-face {
-  font-family: "Minecraft";
+  font-family: "Retro Gaming";
   src: url("../fonts/RetroGaming.woff2") format("woff2"),
     url("../fonts/RetroGaming.woff") format("woff");
   font-weight: normal;
@@ -7,14 +7,18 @@
   font-display: swap;
 }
 
+$primary: whitesmoke;
+$secondary: black;
+$accent: #fd1348;
+
 body {
   margin: 0;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: "Minecraft", sans-serif;
-  background-color: black;
+  font-family: "Retro Gaming", sans-serif;
+  background-color: $secondary;
   font-style: normal;
 }
 
@@ -34,6 +38,41 @@ canvas {
   image-rendering: pixelated;
 }
 
+label {
+  user-select: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+input[type="checkbox" i] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: $primary;
+  margin: 0;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    left: 3px;
+    right: 3px;
+    display: none;
+    background-color: $accent;
+  }
+  &:checked {
+    &::after {
+      display: block;
+    }
+  }
+}
+
 .container {
   width: 850px;
   display: flex;
@@ -41,7 +80,7 @@ canvas {
 }
 
 header {
-  color: whitesmoke;
+  color: $primary;
   margin: 40px 0;
   h1 {
     font-size: 45px;
@@ -53,7 +92,7 @@ header {
 #game {
   display: flex;
   width: 100%;
-  box-shadow: 0px 0px 0px 7px whitesmoke;
+  box-shadow: 0px 2px 0px 10px $primary;
   .layers {
     position: relative;
   }
@@ -68,15 +107,38 @@ header {
 
   .panel {
     width: 250px;
-    box-shadow: inset 5px 0 0 0 whitesmoke;
-    .content {
+    box-shadow: inset 5px 0 0 0 $primary;
+    .title {
+      font-size: 20px;
+      width: 100%;
+      text-align: left;
+    }
+    & > div {
       line-height: 1em;
-      padding: 20px;
-      background-color: whitesmoke;
-      font-size: 28px;
-      text-align: center;
-      span {
-        font-size: 45px;
+      padding: 24px;
+      color: $primary;
+      font-size: 24px;
+      box-shadow: 0 4px 0 0 $primary;
+      display: flex;
+      align-items: center;
+    }
+    // .score {
+    //   text-align: center;
+    //   justify-content: space-between;
+    // }
+    .options {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: left;
+      form {
+        margin-top: 15px;
+        input {
+          margin-right: 8px;
+        }
+        label {
+          font-size: 16px;
+          margin-bottom: 5px;
+        }
       }
     }
   }
@@ -87,15 +149,9 @@ footer {
   align-items: center;
   &,
   a {
-    color: white;
-    font-size: 18px;
+    color: $primary;
   }
-
-  a {
-    text-decoration: none;
-    text-shadow: 0 0 2px white;
-    &:hover {
-      text-decoration: underline;
-    }
+  a:hover {
+    color: $accent;
   }
 }

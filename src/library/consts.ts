@@ -1,7 +1,7 @@
 export const COLOR_PALETTE = {
   BG: "black",
   HEAD: "whitesmoke",
-  TAIL: "#cccccc",
+  TAIL: "whitesmoke",
   FOOD: "#fd1348",
 };
 

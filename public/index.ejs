@@ -16,15 +16,28 @@
           <canvas class="bg"></canvas>
         </div>
         <div class="panel">
-          <div class="content">
-            <h4>Score</h4>
-            <span class="ui score">0</span>
+          <div class="score">
+            <h4 class="title">Score</h4>
+            <span class="scoreText">0</span>
+          </div>
+          <div class="options">
+            <h4 class="title">Options</h4>
+            <form id="options-form">
+              <label for="gizmos">
+                <input type="checkbox" name="gizmos" id="gizmos" />
+                Gizmos</label
+              >
+              <label for="wrap">
+                <input type="checkbox" name="wrap" id="wrap" />
+                Wrap</label
+              >
+            </form>
           </div>
         </div>
       </div>
       <footer>
         <small
-          >&copy; <span class="ui year"></span>. Created by
+          >&copy; <span class="yearText"></span>. Created by
           <a href="https://taus.mx" target="_blank" rel="nofollow noopener"
             >Santiago Degetau</a
           >.</small

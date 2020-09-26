@@ -3,7 +3,7 @@ import { Direction, Vector2 } from "./library/types";
 
 export default class Snake {
   // parts
-  public head: Vector2;
+  public head: Vector2 = null;
   private tail: Vector2[] = [];
 
   // callbacks
@@ -11,12 +11,6 @@ export default class Snake {
   private onEat: () => void;
 
   constructor(startPos: Vector2, onCollide: () => void, onEat: () => void) {
-    for (let i = 0; i < 5; i++) {
-      this.tail.push({
-        x: UNIT_SIZE * -i,
-        y: 0,
-      });
-    }
     this.head = startPos;
     this.onCollide = onCollide;
     this.onEat = onEat;
@@ -28,7 +22,8 @@ export default class Snake {
     direction: Direction,
     width: number,
     height: number,
-    food: Vector2
+    food: Vector2,
+    canWrap: boolean
   ) => {
     // check self collide
     this.tail.forEach(({ x, y }) => {
@@ -65,8 +60,12 @@ export default class Snake {
       default:
         break;
     }
-    // check wrap
+    // check wrap / map collide
     if (this.head.x < 0) {
+      if (!canWrap) {
+        this.onCollide();
+        return;
+      }
       this.head = {
         ...this.head,
         x: width - UNIT_SIZE,
@@ -74,6 +73,10 @@ export default class Snake {
       return;
     }
     if (this.head.x > width - UNIT_SIZE) {
+      if (!canWrap) {
+        this.onCollide();
+        return;
+      }
       this.head = {
         ...this.head,
         x: 0,
@@ -81,6 +84,10 @@ export default class Snake {
       return;
     }
     if (this.head.y < 0) {
+      if (!canWrap) {
+        this.onCollide();
+        return;
+      }
       this.head = {
         ...this.head,
         y: height - UNIT_SIZE,
@@ -88,6 +95,10 @@ export default class Snake {
       return;
     }
     if (this.head.y > height - UNIT_SIZE) {
+      if (!canWrap) {
+        this.onCollide();
+        return;
+      }
       this.head = {
         ...this.head,
         y: 0,

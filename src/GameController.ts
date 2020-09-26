@@ -1,18 +1,22 @@
+// TODO:
+// on click start
+// layers
+
 import Snake from "./Snake";
 import Canvas from "./Canvas";
 import UI from "./UI";
 import { COLOR_PALETTE, UNIT_SIZE, STROKE_SIZE, DELAY } from "./library/consts";
-import { Direction, Vector2 } from "./library/types";
+import { Direction, Options, Vector2 } from "./library/types";
 
 export default class GameController {
   // dimensions
-  private width: number;
-  private height: number;
+  private width: number = 0;
+  private height: number = 0;
 
   // ui elements
-  private ui: UI;
-  private mainCanvas: Canvas;
-  private bgCanvas: Canvas; // TODO
+  private ui: UI = null;
+  private mainCanvas: Canvas = null;
+  private bgCanvas: Canvas = null;
 
   // timing & mechanics
   private direction: Direction = Direction.Left;
@@ -20,10 +24,15 @@ export default class GameController {
   private isRunning: boolean = false;
 
   // objects
-  private food: Vector2;
-  private snake: Snake;
+  private food: Vector2 = null;
+  private snake: Snake = null;
 
+  // data
   private score: number = 0;
+  private options: Options = {
+    gizmos: false,
+    wrap: true,
+  };
 
   constructor(width: number) {
     this.width = width - (width % UNIT_SIZE);
@@ -42,10 +51,7 @@ export default class GameController {
     this.snake = new Snake({ x: 0, y: 0 }, this.handleCollide, this.handleEat);
     this.start();
 
-    // TODO:
-    // on click start
-    // layers
-    this.ui = new UI();
+    this.ui = new UI(this.options, this.handleOptionsChange);
   }
 
   private start = () => {
@@ -70,38 +76,38 @@ export default class GameController {
 
   private registerEvents = () => {
     document.addEventListener("keydown", (e) => {
-      switch (e.key) {
+      switch (e.key.toLowerCase()) {
         case "w":
-        case "ArrowUp":
+        case "arrowup":
           if (this.direction !== Direction.Down) {
             this.direction = Direction.Up;
           }
-          break;
+          return;
         case "d":
-        case "ArrowRight":
+        case "arrowright":
           if (this.direction !== Direction.Right) {
             this.direction = Direction.Left;
           }
-          break;
+          return;
         case "s":
-        case "ArrowDown":
+        case "arrowdown":
           if (this.direction !== Direction.Up) {
             this.direction = Direction.Down;
           }
-          break;
+          return;
         case "a":
-        case "ArrowLeft":
+        case "arrowleft":
           if (this.direction !== Direction.Left) {
             this.direction = Direction.Right;
           }
-          break;
+          return;
         case "p":
           if (this.isRunning) {
             this.pause();
           } else {
             this.resume();
           }
-          break;
+          return;
         default:
           return;
       }
@@ -109,7 +115,13 @@ export default class GameController {
   };
 
   private loop = () => {
-    this.snake.move(this.direction, this.width, this.height, this.food);
+    this.snake.move(
+      this.direction,
+      this.width,
+      this.height,
+      this.food,
+      this.options.wrap
+    );
     this.blit();
   };
 
@@ -143,6 +155,21 @@ export default class GameController {
     this.mainCanvas.ctx.fillStyle = COLOR_PALETTE.FOOD;
     this.mainCanvas.ctx.rect(this.food.x, this.food.y, UNIT_SIZE, UNIT_SIZE);
     this.mainCanvas.ctx.fill();
+    this.mainCanvas.ctx.stroke();
+    this.mainCanvas.ctx.closePath();
+  };
+
+  private drawGizmos = () => {
+    this.mainCanvas.ctx.beginPath();
+    this.mainCanvas.ctx.moveTo(
+      this.snake.head.x + Math.floor(UNIT_SIZE / 2),
+      this.snake.head.y + Math.floor(UNIT_SIZE / 2)
+    );
+    this.mainCanvas.ctx.lineTo(
+      this.food.x + Math.floor(UNIT_SIZE / 2),
+      this.food.y + Math.floor(UNIT_SIZE / 2)
+    );
+    this.mainCanvas.ctx.strokeStyle = "blue";
     this.mainCanvas.ctx.stroke();
     this.mainCanvas.ctx.closePath();
   };
@@ -182,22 +209,9 @@ export default class GameController {
     this.mainCanvas.ctx.clearRect(0, 0, this.width, this.height);
     this.drawFood();
     this.drawSnake();
-    this.gizmo();
-  };
-
-  private gizmo = () => {
-    this.mainCanvas.ctx.beginPath();
-    this.mainCanvas.ctx.moveTo(
-      this.snake.head.x + Math.floor(UNIT_SIZE / 2),
-      this.snake.head.y + Math.floor(UNIT_SIZE / 2)
-    );
-    this.mainCanvas.ctx.lineTo(
-      this.food.x + Math.floor(UNIT_SIZE / 2),
-      this.food.y + Math.floor(UNIT_SIZE / 2)
-    );
-    this.mainCanvas.ctx.strokeStyle = "blue";
-    this.mainCanvas.ctx.stroke();
-    this.mainCanvas.ctx.closePath();
+    if (this.options.gizmos) {
+      this.drawGizmos();
+    }
   };
 
   private handleCollide = () => {
@@ -207,5 +221,10 @@ export default class GameController {
   private handleEat = () => {
     this.setFoodPosition();
     this.ui.updateScore(++this.score);
+  };
+
+  private handleOptionsChange = (key: string, value: boolean) => {
+    // @ts-ignore
+    this.options[key] = value;
   };
 }
