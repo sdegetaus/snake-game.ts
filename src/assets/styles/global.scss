@@ -1,15 +1,5 @@
-@font-face {
-  font-family: "Retro Gaming";
-  src: url("../fonts/RetroGaming.woff2") format("woff2"),
-    url("../fonts/RetroGaming.woff") format("woff");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-$primary: whitesmoke;
-$secondary: black;
-$accent: #fd1348;
+@import "./font";
+@import "./variable";
 
 body {
   margin: 0;
@@ -17,7 +7,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: "Retro Gaming", sans-serif;
+  font-family: "RetroGaming", sans-serif;
   background-color: $secondary;
   font-style: normal;
 }
@@ -46,6 +36,7 @@ label {
 }
 
 input[type="checkbox" i] {
+  cursor: pointer;
   appearance: none;
   width: 18px;
   height: 18px;
@@ -53,14 +44,15 @@ input[type="checkbox" i] {
   margin: 0;
   padding: 0;
   border: none;
-  cursor: pointer;
   outline: none;
   position: relative;
+
   &:hover {
     &::after {
       display: block;
     }
   }
+
   &::after {
     content: "";
     position: absolute;
@@ -71,6 +63,7 @@ input[type="checkbox" i] {
     display: none;
     background-color: rgba(0, 0, 0, 0.2);
   }
+
   &:checked {
     &::after {
       display: block;
@@ -93,23 +86,29 @@ header {
     font-size: 45px;
     display: flex;
     width: 100%;
+    span {
+      color: $accent;
+    }
   }
 }
 
 #game {
+  user-select: none;
   display: flex;
   width: 100%;
   box-shadow: 0px 2px 0px 10px $primary;
+
   .layers {
     position: relative;
-  }
-
-  .main {
-    z-index: 1;
-  }
-
-  .bg {
-    z-index: 0;
+    .overlay {
+      z-index: 2;
+    }
+    .main {
+      z-index: 1;
+    }
+    .bg {
+      z-index: 0;
+    }
   }
 
   .panel {

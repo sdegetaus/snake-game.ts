@@ -3,10 +3,11 @@ export const STROKE_SIZE = 3;
 export const DELAY = 200;
 
 export const COLOR_PALETTE = Object.freeze({
-  BG: "black",
+  BG: "#000000",
   HEAD: "whitesmoke",
   TAIL: "whitesmoke",
-  FOOD: "#fd1348",
+  RED: "#ff1249",
+  BLUE: "#00cef6",
 });
 
 export const ID = Object.freeze({

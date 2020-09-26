@@ -1,6 +1,3 @@
-// TODO:
-// on click start
-
 import Canvas from "./Canvas";
 import {
   COLOR_PALETTE,
@@ -9,7 +6,8 @@ import {
   STROKE_SIZE,
   UNIT_SIZE,
 } from "./library/consts";
-import { Direction, Vector2 } from "./library/types";
+import { BooleanPair, Direction, NumberPair, Vector2 } from "./library/types";
+import Overlay from "./Overlay";
 import Snake from "./Snake";
 import UI from "./UI";
 
@@ -20,6 +18,7 @@ export default class GameController {
 
   // ui elements
   private ui: UI = null;
+  private overlay: Overlay = null;
   private mainCanvas: Canvas = null;
   private bgCanvas: Canvas = null;
 
@@ -34,11 +33,12 @@ export default class GameController {
 
   // data
   private score: number = 0;
-  private options: { [key: string]: boolean } = {
+  private options: BooleanPair = {
     gizmos: true,
     wrap: false,
+    godMode: false,
   };
-  private stats: { [key: string]: string | number } = {
+  private initialStats: NumberPair = {
     length: 1,
     distance: 0,
   };
@@ -57,30 +57,58 @@ export default class GameController {
     layers.style.width = `${this.width}px`;
     layers.style.height = `${this.height}px`;
 
-    this.snake = new Snake({ x: 0, y: 0 }, this.handleCollide, this.handleEat);
-    this.ui = new UI(this.options, this.stats, this.handleOptionsChange);
+    this.overlay = new Overlay(this.width, this.height);
 
-    this.start();
+    const triggerStart = (e: KeyboardEvent) => {
+      switch (e.key.toLowerCase()) {
+        case " ":
+          document.removeEventListener("keydown", triggerStart);
+          this.start();
+          break;
+        default:
+          break;
+      }
+    };
+    document.addEventListener("keydown", triggerStart);
   }
 
   private start = () => {
+    this.overlay.onStart(false);
+    this.snake = new Snake(
+      { x: this.width / 2, y: this.height / 2 },
+      this.gameOver,
+      this.handleEat
+    );
+    this.ui = new UI(this.options, this.initialStats, this.handleOptionsChange);
+    this.bgCanvas.fill(COLOR_PALETTE.BG);
     this.setFoodPosition();
     this.registerEvents();
     this.blit();
     this.timer = setInterval(this.loop, DELAY);
     this.isRunning = true;
-    this.drawBg();
   };
 
   private pause = () => {
-    this.isRunning = false;
+    this.overlay.onPause(true);
     clearInterval(this.timer);
     this.timer = null;
+    this.isRunning = false;
   };
 
   private resume = () => {
-    this.isRunning = true;
+    this.overlay.onPause(false);
     this.timer = setInterval(this.loop, DELAY);
+    this.isRunning = true;
+  };
+
+  private gameOver = () => {
+    if (this.options.godMode) {
+      return;
+    }
+    this.overlay.onGameOver(true);
+    clearInterval(this.timer);
+    this.timer = null;
+    this.isRunning = false;
   };
 
   private registerEvents = () => {
@@ -159,78 +187,69 @@ export default class GameController {
     });
   };
 
-  private drawFood = () => {
-    this.mainCanvas.ctx.beginPath();
-    this.mainCanvas.ctx.fillStyle = COLOR_PALETTE.FOOD;
-    this.mainCanvas.ctx.rect(this.food.x, this.food.y, UNIT_SIZE, UNIT_SIZE);
-    this.mainCanvas.ctx.fill();
-    this.mainCanvas.ctx.stroke();
-    this.mainCanvas.ctx.closePath();
-  };
+  private draw = {
+    food: () => {
+      this.mainCanvas.ctx.beginPath();
+      this.mainCanvas.ctx.fillStyle = COLOR_PALETTE.RED;
+      this.mainCanvas.ctx.rect(this.food.x, this.food.y, UNIT_SIZE, UNIT_SIZE);
+      this.mainCanvas.ctx.fill();
+      this.mainCanvas.ctx.stroke();
+      this.mainCanvas.ctx.closePath();
+    },
+    gizmos: () => {
+      this.mainCanvas.ctx.beginPath();
+      this.mainCanvas.ctx.moveTo(
+        this.snake.head.x + Math.floor(UNIT_SIZE / 2),
+        this.snake.head.y + Math.floor(UNIT_SIZE / 2)
+      );
+      this.mainCanvas.ctx.lineTo(
+        this.food.x + Math.floor(UNIT_SIZE / 2),
+        this.food.y + Math.floor(UNIT_SIZE / 2)
+      );
+      this.mainCanvas.ctx.strokeStyle = "limegreen";
+      this.mainCanvas.ctx.stroke();
+      this.mainCanvas.ctx.closePath();
+      const distance =
+        Math.hypot(
+          this.food.x - this.snake.head.x,
+          this.food.y - this.snake.head.y
+        ) / UNIT_SIZE;
+      this.ui.updateStats(ID.distance, distance.toFixed(2));
+    },
+    snake: () => {
+      this.mainCanvas.ctx.beginPath();
+      // draw tail
+      this.mainCanvas.ctx.fillStyle = COLOR_PALETTE.TAIL;
+      this.snake.getTail().forEach((pos) => {
+        this.mainCanvas.ctx.rect(pos.x, pos.y, UNIT_SIZE, UNIT_SIZE);
+      });
+      this.mainCanvas.ctx.fill();
+      this.mainCanvas.ctx.stroke();
 
-  private drawGizmos = () => {
-    this.mainCanvas.ctx.beginPath();
-    this.mainCanvas.ctx.moveTo(
-      this.snake.head.x + Math.floor(UNIT_SIZE / 2),
-      this.snake.head.y + Math.floor(UNIT_SIZE / 2)
-    );
-    this.mainCanvas.ctx.lineTo(
-      this.food.x + Math.floor(UNIT_SIZE / 2),
-      this.food.y + Math.floor(UNIT_SIZE / 2)
-    );
-    this.mainCanvas.ctx.strokeStyle = "blue";
-    this.mainCanvas.ctx.stroke();
-    this.mainCanvas.ctx.closePath();
-    const distance =
-      Math.hypot(
-        this.food.x - this.snake.head.x,
-        this.food.y - this.snake.head.y
-      ) / UNIT_SIZE;
-    this.ui.updateStats(ID.distance, distance.toFixed(2));
-  };
-
-  private drawSnake = () => {
-    this.mainCanvas.ctx.beginPath();
-    // draw tail
-    this.mainCanvas.ctx.fillStyle = COLOR_PALETTE.TAIL;
-    this.snake.getTail().forEach((pos) => {
-      this.mainCanvas.ctx.rect(pos.x, pos.y, UNIT_SIZE, UNIT_SIZE);
-    });
-    this.mainCanvas.ctx.fill();
-    this.mainCanvas.ctx.stroke();
-
-    // draw head
-    this.mainCanvas.ctx.beginPath();
-    this.mainCanvas.ctx.fillStyle = COLOR_PALETTE.HEAD;
-    this.mainCanvas.ctx.rect(
-      this.snake.head.x,
-      this.snake.head.y,
-      UNIT_SIZE,
-      UNIT_SIZE
-    );
-    this.mainCanvas.ctx.fill();
-    this.mainCanvas.ctx.stroke();
-    this.mainCanvas.ctx.closePath();
-  };
-
-  private drawBg = () => {
-    this.bgCanvas.ctx.fillStyle = COLOR_PALETTE.BG;
-    this.bgCanvas.ctx.fillRect(0, 0, this.width, this.height);
+      // draw head
+      this.mainCanvas.ctx.beginPath();
+      this.mainCanvas.ctx.fillStyle = COLOR_PALETTE.HEAD;
+      this.mainCanvas.ctx.rect(
+        this.snake.head.x,
+        this.snake.head.y,
+        UNIT_SIZE,
+        UNIT_SIZE
+      );
+      this.mainCanvas.ctx.fill();
+      this.mainCanvas.ctx.stroke();
+      this.mainCanvas.ctx.closePath();
+    },
   };
 
   private blit = () => {
     this.mainCanvas.ctx.strokeStyle = COLOR_PALETTE.BG;
     this.mainCanvas.ctx.lineWidth = STROKE_SIZE;
-    this.mainCanvas.ctx.clearRect(0, 0, this.width, this.height);
-    this.drawFood();
-    this.drawSnake();
+    this.mainCanvas.clear();
+    this.draw.food();
+    this.draw.snake();
     if (this.options.gizmos) {
-      this.drawGizmos();
+      this.draw.gizmos();
     }
-  };
-
-  private handleCollide = () => {
-    console.log("Collided");
   };
 
   private handleEat = () => {

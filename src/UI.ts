@@ -14,13 +14,20 @@ export default class UI {
 
     // set default options values
     Object.entries(defaultOptions).forEach(([key, value]) => {
-      (document.getElementById(key) as HTMLInputElement).checked = value;
+      const inputElement = document.getElementById(key) as HTMLInputElement;
+      if (inputElement == null) {
+        throw new Error(`Couldn't find input with id: "${key}"`);
+      }
+      inputElement.checked = value;
     }, {});
 
     // set initial stats values
     this.statsElements = Object.entries(initialStats).reduce(
       (prev, [key, value]) => {
         const element = document.querySelector(`.stats .${key}`) as Element;
+        if (element == null) {
+          throw new Error(`Couldn't find element with class: "${key}"`);
+        }
         element.innerHTML = value.toString();
         return {
           ...prev,

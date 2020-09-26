@@ -8,10 +8,11 @@
   <body>
     <div class="container">
       <header>
-        <h1><%= htmlWebpackPlugin.options.title %></h1>
+        <h1>Snake<span>Game</span></h1>
       </header>
       <div id="game">
         <div class="layers">
+          <canvas class="overlay"></canvas>
           <canvas class="main"></canvas>
           <canvas class="bg"></canvas>
         </div>
@@ -44,6 +45,10 @@
                 <input type="checkbox" name="wrap" id="wrap" />
                 Wrap</label
               >
+              <label for="godMode">
+                <input type="checkbox" name="godMode" id="godMode" />
+                God Mode</label
+              >
             </form>
           </div>
         </div>
@@ -53,7 +58,7 @@
           >Created by
           <a href="https://taus.mx" target="_blank" rel="nofollow noopener"
             >Santiago Degetau</a
-          >.</small
+          ></small
         >
       </footer>
     </div>
