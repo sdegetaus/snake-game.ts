@@ -56,6 +56,11 @@ input[type="checkbox" i] {
   cursor: pointer;
   outline: none;
   position: relative;
+  &:hover {
+    &::after {
+      display: block;
+    }
+  }
   &::after {
     content: "";
     position: absolute;
@@ -64,11 +69,12 @@ input[type="checkbox" i] {
     left: 3px;
     right: 3px;
     display: none;
-    background-color: $accent;
+    background-color: rgba(0, 0, 0, 0.2);
   }
   &:checked {
     &::after {
       display: block;
+      background-color: $accent;
     }
   }
 }
@@ -81,8 +87,9 @@ input[type="checkbox" i] {
 
 header {
   color: $primary;
-  margin: 40px 0;
+  margin: 40px 0 55px;
   h1 {
+    margin: 0 -10px;
     font-size: 45px;
     display: flex;
     width: 100%;
@@ -108,11 +115,14 @@ header {
   .panel {
     width: 250px;
     box-shadow: inset 5px 0 0 0 $primary;
+
     .title {
       font-size: 20px;
       width: 100%;
       text-align: left;
+      // box-shadow: 0 2px 0 0 white;
     }
+
     & > div {
       line-height: 1em;
       padding: 24px;
@@ -121,17 +131,24 @@ header {
       box-shadow: 0 4px 0 0 $primary;
       display: flex;
       align-items: center;
+      &:last-child {
+        box-shadow: none;
+      }
     }
-    // .score {
-    //   text-align: center;
-    //   justify-content: space-between;
-    // }
-    .options {
+
+    .options,
+    .stats {
+      form,
+      ul {
+        margin-top: 15px !important;
+      }
       flex-direction: row;
       flex-wrap: wrap;
       justify-content: left;
+    }
+
+    .options {
       form {
-        margin-top: 15px;
         input {
           margin-right: 8px;
         }
@@ -141,12 +158,31 @@ header {
         }
       }
     }
+
+    .stats {
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        li {
+          font-size: 16px;
+          width: 100%;
+          display: inline-flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+      }
+    }
   }
 }
 
 footer {
   margin: 40px 0;
   align-items: center;
+  small {
+    margin: 0 -10px;
+  }
   &,
   a {
     color: $primary;

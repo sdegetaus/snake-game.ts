@@ -1,29 +1,34 @@
-import { Options } from "./library/types";
-
 export default class UI {
-  // ui elements
   private scoreEle: Element = null;
 
+  // stats elements
+  private statsElements: { [key: string]: Element } = null;
+
   constructor(
-    defaultOptions: Options,
+    defaultOptions: { [key: string]: boolean },
+    initialStats: { [key: string]: string | number },
     onChange: (key: string, value: boolean) => void
   ) {
+    // get score dispñayer element
     this.scoreEle = document.querySelector(".scoreText");
 
-    // fill copyright year
-    document.querySelector(
-      ".yearText"
-    ).innerHTML = new Date().getFullYear().toString();
-
     // set default options values
-    Object.entries(defaultOptions).reduce((prev, [key, value]) => {
-      const element = document.getElementById(key) as HTMLInputElement;
-      element.checked = value;
-      return {
-        ...prev,
-        [key]: element,
-      };
+    Object.entries(defaultOptions).forEach(([key, value]) => {
+      (document.getElementById(key) as HTMLInputElement).checked = value;
     }, {});
+
+    // set initial stats values
+    this.statsElements = Object.entries(initialStats).reduce(
+      (prev, [key, value]) => {
+        const element = document.querySelector(`.stats .${key}`) as Element;
+        element.innerHTML = value.toString();
+        return {
+          ...prev,
+          [key]: element,
+        };
+      },
+      {}
+    );
 
     // listen to form's onChange event
     document.getElementById("options-form").onchange = (e: Event) => {
@@ -34,5 +39,11 @@ export default class UI {
 
   public updateScore = (score: number) => {
     this.scoreEle.innerHTML = score.toString();
+  };
+
+  public updateStats = (key: string, value: string | number) => {
+    if (this.statsElements[key] != null) {
+      this.statsElements[key].innerHTML = value.toString();
+    }
   };
 }

@@ -1,10 +1,15 @@
 // TODO:
 // on click start
-// layers
 
 import Canvas from "./Canvas";
-import { COLOR_PALETTE, DELAY, STROKE_SIZE, UNIT_SIZE } from "./library/consts";
-import { Direction, Options, Vector2 } from "./library/types";
+import {
+  COLOR_PALETTE,
+  DELAY,
+  ID,
+  STROKE_SIZE,
+  UNIT_SIZE,
+} from "./library/consts";
+import { Direction, Vector2 } from "./library/types";
 import Snake from "./Snake";
 import UI from "./UI";
 
@@ -29,9 +34,13 @@ export default class GameController {
 
   // data
   private score: number = 0;
-  private options: Options = {
-    gizmos: false,
-    wrap: true,
+  private options: { [key: string]: boolean } = {
+    gizmos: true,
+    wrap: false,
+  };
+  private stats: { [key: string]: string | number } = {
+    length: 1,
+    distance: 0,
   };
 
   constructor(width: number) {
@@ -49,9 +58,9 @@ export default class GameController {
     layers.style.height = `${this.height}px`;
 
     this.snake = new Snake({ x: 0, y: 0 }, this.handleCollide, this.handleEat);
-    this.start();
+    this.ui = new UI(this.options, this.stats, this.handleOptionsChange);
 
-    this.ui = new UI(this.options, this.handleOptionsChange);
+    this.start();
   }
 
   private start = () => {
@@ -172,6 +181,12 @@ export default class GameController {
     this.mainCanvas.ctx.strokeStyle = "blue";
     this.mainCanvas.ctx.stroke();
     this.mainCanvas.ctx.closePath();
+    const distance =
+      Math.hypot(
+        this.food.x - this.snake.head.x,
+        this.food.y - this.snake.head.y
+      ) / UNIT_SIZE;
+    this.ui.updateStats(ID.distance, distance.toFixed(2));
   };
 
   private drawSnake = () => {
@@ -215,16 +230,18 @@ export default class GameController {
   };
 
   private handleCollide = () => {
-    console.log("Self-collided");
+    console.log("Collided");
   };
 
   private handleEat = () => {
     this.setFoodPosition();
     this.ui.updateScore(++this.score);
+    this.ui.updateStats(ID.length, 1 + this.snake.getTail().length);
   };
 
   private handleOptionsChange = (key: string, value: boolean) => {
     // @ts-ignore
     this.options[key] = value;
+    // todo: save options to localStorage
   };
 }
