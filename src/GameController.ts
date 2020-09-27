@@ -122,8 +122,8 @@ export default class GameController {
           return;
         case "d":
         case "arrowright":
-          if (this.direction !== Direction.Right) {
-            this.direction = Direction.Left;
+          if (this.direction !== Direction.Left) {
+            this.direction = Direction.Right;
           }
           return;
         case "s":
@@ -134,8 +134,8 @@ export default class GameController {
           return;
         case "a":
         case "arrowleft":
-          if (this.direction !== Direction.Left) {
-            this.direction = Direction.Right;
+          if (this.direction !== Direction.Right) {
+            this.direction = Direction.Left;
           }
           return;
         case "p":

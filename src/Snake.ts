@@ -49,13 +49,13 @@ export default class Snake {
         this.head = { ...this.head, y: this.head.y - UNIT_SIZE };
         break;
       case Direction.Left:
-        this.head = { ...this.head, x: this.head.x + UNIT_SIZE };
+        this.head = { ...this.head, x: this.head.x - UNIT_SIZE };
         break;
       case Direction.Down:
         this.head = { ...this.head, y: this.head.y + UNIT_SIZE };
         break;
       case Direction.Right:
-        this.head = { ...this.head, x: this.head.x - UNIT_SIZE };
+        this.head = { ...this.head, x: this.head.x + UNIT_SIZE };
         break;
       default:
         break;
